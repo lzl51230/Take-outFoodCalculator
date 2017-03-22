@@ -39,28 +39,32 @@ public class cal : MonoBehaviour
             allPersonPrice += money;
         }
 
+        float preAllPersonPrice = 0;
         if (Person.CacheList.Count > 0)
         {
-            allPersonPrice = allPersonPrice / Person.CacheList.Count;
+            preAllPersonPrice = allPersonPrice / Person.CacheList.Count;
         }
 
         //排除总价小于allPersonPrice的情况
         float pecent;
-        var totalPrice = float.Parse(total.text);
+        float totalPrice;
+        float.TryParse(total.text, out totalPrice);
+        //totalPrice = float.Parse(total.text);
         if (totalPrice>0 && totalPrice> allPersonPrice && temp > 0)
         {
-            pecent = (float.Parse(total.text) - allPersonPrice) / temp;
+            pecent = (totalPrice - allPersonPrice) / temp;
         }
         else
         {
             pecent = 1;
         }
+        //Debug.Log("pecent:"+ pecent);
 
         //计算每个商品
         _calResult = new List<KeyValuePair<float, float>>();
         foreach (var money in Person.CacheList)
         {
-            var calPrice = money*pecent + allPersonPrice;
+            var calPrice = money*pecent + preAllPersonPrice;
             _calResult.Add(new KeyValuePair<float, float>(money, calPrice));
         }
 
