@@ -5,21 +5,48 @@ using System.Collections;
 using System.Collections.Generic;
 using System.Text;
 
-public class cal : MonoBehaviour
+public class MainCal : MonoBehaviour
 {
-    public AddPerson Person, AllPerson;
-    public InputField total;
+    public static MainCal Instance
+    {
+        get
+        {
+            return _instance;
+        }
+    }
+    private static MainCal _instance;
 
-    private Text Result;
-    private List<KeyValuePair<float, float>> _calResult = new List<KeyValuePair<float, float>>(); 
+    public AddPerson Person, AllPerson;
+    public InputField TotalPrice;
+    public ShowDetail Show;
+
+    //private Text Result;
+    private float _totalPrice;
+    private List<KeyValuePair<float, float>> _calResult = new List<KeyValuePair<float, float>>();
+
     // Use this for initialization
     void Start ()
     {
-        Result = transform.GetComponent<Text>();
+        //Result = transform.GetComponent<Text>();
+        _instance = this;
+
+        TotalPrice.onValueChanged.AddListener(OnTotalPriceChange);
+        Person.UpdateAction += UpdateChange;
+        AllPerson.UpdateAction += UpdateChange;
+
+        Show.UpdateShow(new List<KeyValuePair<float, float>>(), new List<float>());
     }
-	
-	// Update is called once per frame
-    private void Update()
+
+    private void OnTotalPriceChange(string inputPrice)
+    {
+        if (float.TryParse(inputPrice, out _totalPrice))
+        {
+            UpdateChange();
+        }
+    }
+
+    // Update is called once per frame
+    private void UpdateChange()
     {
         //排除所有商品单价总和小于等于0
         float temp = 0;
@@ -47,12 +74,10 @@ public class cal : MonoBehaviour
 
         //排除总价小于allPersonPrice的情况
         float pecent;
-        float totalPrice;
-        float.TryParse(total.text, out totalPrice);
         //totalPrice = float.Parse(total.text);
-        if (totalPrice>0 && totalPrice> allPersonPrice && temp > 0)
+        if (_totalPrice>0 && _totalPrice > allPersonPrice && temp > 0)
         {
-            pecent = (totalPrice - allPersonPrice) / temp;
+            pecent = (_totalPrice - allPersonPrice) / temp;
         }
         else
         {
@@ -68,12 +93,16 @@ public class cal : MonoBehaviour
             _calResult.Add(new KeyValuePair<float, float>(money, calPrice));
         }
 
-        var uiString = frontMoney();
-        Result.text = uiString;
+        Show.UpdateShow(_calResult, AllPerson.CacheList);
+
+        //var uiString = frontMoney();
+        //Result.text = uiString;
     }
 
+    
 
-    private string frontMoney()
+
+/*    private string frontMoney()
     {
         var str = new StringBuilder();
         str.AppendLine("每人外卖价：");
@@ -90,5 +119,5 @@ public class cal : MonoBehaviour
         }
 
         return str.ToString();
-    }
+    }*/
 }
