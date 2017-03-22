@@ -11,7 +11,7 @@ public class cal : MonoBehaviour
     public InputField total;
 
     private Text Result;
-    private Dictionary<float, float> _calResult = new Dictionary<float, float>(); 
+    private List<KeyValuePair<float, float>> _calResult = new List<KeyValuePair<float, float>>(); 
     // Use this for initialization
     void Start ()
     {
@@ -57,11 +57,11 @@ public class cal : MonoBehaviour
         }
 
         //计算每个商品
-        _calResult = new Dictionary<float, float>();
+        _calResult = new List<KeyValuePair<float, float>>();
         foreach (var money in Person.CacheList)
         {
             var calPrice = money*pecent + allPersonPrice;
-            _calResult.Add(money, calPrice);
+            _calResult.Add(new KeyValuePair<float, float>(money, calPrice));
         }
 
         var uiString = frontMoney();
